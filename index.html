@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Invaders Game</title>
+<style>
+    canvas {
+        display: block;
+        margin: 0 auto;
+        border: 1px solid black;
+    }
+</style>
+</head>
+<body>
+<canvas id="gameCanvas" width="480" height="320"></canvas>
+<script>
+    // Canvas
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Player
+    const player = {
+        x: canvas.width / 2,
+        y: canvas.height - 30,
+        width: 30,
+        height: 30,
+        speed: 5
+    };
+
+    // Controls
+    let leftPressed = false;
+    let rightPressed = false;
+
+    document.addEventListener('keydown', keyDownHandler, false);
+    document.addEventListener('keyup', keyUpHandler, false);
+
+    function keyDownHandler(e) {
+        if (e.key === 'Left' || e.key === 'ArrowLeft') {
+            leftPressed = true;
+        } else if (e.key === 'Right' || e.key === 'ArrowRight') {
+            rightPressed = true;
+        }
+    }
+
+    function keyUpHandler(e) {
+        if (e.key === 'Left' || e.key === 'ArrowLeft') {
+            leftPressed = false;
+        } else if (e.key === 'Right' || e.key === 'ArrowRight') {
+            rightPressed = false;
+        }
+    }
+
+    // Enemies
+    const enemies = [];
+    for (let i = 0; i < 5; i++) {
+        enemies.push({
+            x: Math.random() * (canvas.width - 30),
+            y: Math.random() * (canvas.height - 200),
+            width: 30,
+            height: 30,
+            speed: 2
+        });
+    }
+
+    // Draw functions
+    function drawPlayer() {
+        ctx.beginPath();
+        ctx.rect(player.x, player.y, player.width, player.height);
+        ctx.fillStyle = 'blue';
+        ctx.fill();
+        ctx.closePath();
+    }
+
+    function drawEnemy(enemy) {
+        ctx.beginPath();
+        ctx.rect(enemy.x, enemy.y, enemy.width, enemy.height);
+        ctx.fillStyle = 'red';
+        ctx.fill();
+        ctx.closePath();
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawPlayer();
+        enemies.forEach(drawEnemy);
+    }
+
+    // Update functions
+    function updatePlayer() {
+        if (leftPressed && player.x > 0) {
+            player.x -= player.speed;
+        }
+        if (rightPressed && player.x < canvas.width - player.width) {
+            player.x += player.speed;
+        }
+    }
+
+    function updateEnemies() {
+        enemies.forEach(enemy => {
+            enemy.y += enemy.speed;
+            if (enemy.y > canvas.height) {
+                enemy.y = 0;
+                enemy.x = Math.random() * (canvas.width - 30);
+            }
+        });
+    }
+
+    function update() {
+        updatePlayer();
+        updateEnemies();
+    }
+
+    // Main loop
+    function main() {
+        draw();
+        update();
+        requestAnimationFrame(main);
+    }
+
+    main();
+</script>
+</body>
+</html>
